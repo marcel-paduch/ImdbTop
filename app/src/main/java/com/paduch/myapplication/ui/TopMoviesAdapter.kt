@@ -16,13 +16,17 @@ val DiffCallback = object : DiffUtil.ItemCallback<Movie>() {
     override fun areContentsTheSame(oldItem: Movie, newItem: Movie): Boolean = oldItem == newItem
 }
 
-class TopMoviesAdapter(private val context: Context, val itemClick: (movie: Movie) -> Unit) :
+class TopMoviesAdapter(private val context: Context, val itemClick: (movie: Movie) -> Unit,
+                       val loadNext: ()-> Unit) :
     ListAdapter<Movie, TopMoviesAdapter.ViewHolder>(DiffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(parent.inflate(R.layout.recycler_row))
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        if (position == itemCount - 1) {
+            loadNext()
+        }
         val movie: Movie = getItem(position)
         holder.itemView.setOnClickListener { itemClick(movie)  }
         holder.itemView.title_text_view.text =

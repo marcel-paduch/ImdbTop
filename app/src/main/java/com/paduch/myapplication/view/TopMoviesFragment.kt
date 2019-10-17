@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.paduch.myapplication.R
 import com.paduch.myapplication.data.remote.model.Movie
 import com.paduch.myapplication.di.DaggerMoviesComponent
@@ -38,15 +39,23 @@ class TopMoviesFragment : Fragment() {
         val view = container?.inflate(R.layout.fragment_top_movies)
         val recyclerView = view?.my_recycler_view
         val layoutManager = LinearLayoutManager(context)
-        view?.fab?.setOnClickListener { showFilterDialog() }
+        val fab = view?.fab
+        fab?.setOnClickListener { showFilterDialog() }
         recyclerView?.layoutManager = layoutManager
         recyclerView?.addItemDecoration(DividerItemDecoration(context, layoutManager.orientation))
-        val adapter = context?.let { TopMoviesAdapter(it, ::showDetailsFragment) }
+        val adapter = context?.let {
+            TopMoviesAdapter(it, ::showDetailsFragment) {
+                viewModel.requestPage(viewModel.lastRequestedPage + 1)
+            }
+        }
         recyclerView?.adapter = adapter
         viewModel = ViewModelProviders.of(this, viewModelFactory)[TopMoviesViewModel::class.java]
         viewModel.topMoviesLiveData.observe(
             viewLifecycleOwner,
-            Observer { adapter?.submitList(it.results) })
+            Observer {
+                adapter?.submitList(ArrayList(it.results))
+                viewModel.lastRequestedPage = it.page
+            })
         viewModel.requestPage()
         return view
     }
@@ -68,7 +77,7 @@ class TopMoviesFragment : Fragment() {
         layout.addView(maxYearBox)
 
         alert.setView(layout)
-        alert.setPositiveButton(android.R.string.ok) { dialog, _ ->
+        alert.setPositiveButton(android.R.string.ok) { _, _ ->
             val maxYear = maxYearBox.text.toString().toIntOrNull()
             val minYear = minYearBox.text.toString().toIntOrNull()
             viewModel.setYearFiltering(minYear ?: 0, maxYear ?: 9999)

@@ -12,9 +12,9 @@ class TopMoviesViewModel @Inject constructor(
     private val repository: MoviesRepository
 ) : ViewModel() {
     private val pageFilter: MutableLiveData<Int> = MutableLiveData()
+    var lastRequestedPage = 1
     val topMoviesLiveData: LiveData<TopMoviesResponse> =
         Transformations.switchMap(pageFilter, repository::getTopMovies)
-
     fun requestPage(page: Int = 1) = pageFilter.postValue(page)
 
     fun setYearFiltering(minYear: Int, maxYear: Int) {
