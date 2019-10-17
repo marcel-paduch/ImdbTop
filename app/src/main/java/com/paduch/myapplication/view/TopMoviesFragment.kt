@@ -1,10 +1,13 @@
 package com.paduch.myapplication.view
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -20,9 +23,12 @@ import com.paduch.myapplication.viewmodel.TopMoviesViewModel
 import kotlinx.android.synthetic.main.fragment_top_movies.view.*
 import javax.inject.Inject
 
+
 class TopMoviesFragment : Fragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private lateinit var viewModel: TopMoviesViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,14 +38,48 @@ class TopMoviesFragment : Fragment() {
         val view = container?.inflate(R.layout.fragment_top_movies)
         val recyclerView = view?.my_recycler_view
         val layoutManager = LinearLayoutManager(context)
+        view?.fab?.setOnClickListener { showFilterDialog() }
         recyclerView?.layoutManager = layoutManager
         recyclerView?.addItemDecoration(DividerItemDecoration(context, layoutManager.orientation))
         val adapter = context?.let { TopMoviesAdapter(it, ::showDetailsFragment) }
         recyclerView?.adapter = adapter
-        val vm = ViewModelProviders.of(this, viewModelFactory)[TopMoviesViewModel::class.java]
-        vm.topMoviesLiveData.observe(viewLifecycleOwner, Observer { adapter?.submitList(it.results) })
-        vm.requestPage(1)
+        viewModel = ViewModelProviders.of(this, viewModelFactory)[TopMoviesViewModel::class.java]
+        viewModel.topMoviesLiveData.observe(
+            viewLifecycleOwner,
+            Observer { adapter?.submitList(it.results) })
+        viewModel.requestPage(2)
         return view
+    }
+
+    private fun showFilterDialog() {
+        val alert = AlertDialog.Builder(context)
+
+        val layout = LinearLayout(context)
+        layout.orientation = LinearLayout.VERTICAL
+
+        val minYearBox = EditText(context)
+        minYearBox.hint = "min year"
+        minYearBox.setText(viewModel.getMinYear().toString())
+        layout.addView(minYearBox)
+
+        val maxYearBox = EditText(context)
+        maxYearBox.hint = "max year"
+        maxYearBox.setText(viewModel.getMaxYear().toString())
+        layout.addView(maxYearBox)
+
+        alert.setView(layout)
+        alert.setPositiveButton(android.R.string.ok) { dialog, _ ->
+            val maxYear = maxYearBox.text.toString().toIntOrNull()
+            val minYear = minYearBox.text.toString().toIntOrNull()
+            viewModel.setYearFiltering(minYear ?: 0, maxYear ?: 9999)
+        }
+        alert.setNegativeButton(android.R.string.cancel) { dialog, _ ->
+            run {
+                dialog.cancel()
+                viewModel.disableFiltering()
+            }
+        }
+        alert.show()
     }
 
     private fun showDetailsFragment(movie: Movie) {
@@ -60,3 +100,4 @@ class TopMoviesFragment : Fragment() {
         DaggerMoviesComponent.builder().build().inject(this)
     }
 }
+

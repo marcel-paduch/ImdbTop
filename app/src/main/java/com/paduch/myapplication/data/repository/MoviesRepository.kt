@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.paduch.myapplication.data.remote.model.Movie
 import com.paduch.myapplication.data.remote.model.TopMoviesResponse
 import com.paduch.myapplication.data.remote.service.ImdbService
+import org.joda.time.LocalDate
 import java.util.concurrent.ExecutorService
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -16,9 +17,16 @@ class MoviesRepository @Inject constructor(
     private val topMoviesData: MutableLiveData<TopMoviesResponse> = MutableLiveData()
     private val cache: ArrayList<Movie> = ArrayList()
     private var lastPage = 1
+    var enableFiltering = false
+        set(x) {
+            field = x
+            emitFromCache()
+        }
+    var maxYear = 9999
+    var minYear = 0
 
     fun getTopMovies(page: Int = 1): MutableLiveData<TopMoviesResponse> {
-       // emitFromCache()
+        // emitFromCache()
         refreshTopMovies(page)
         return topMoviesData
     }
@@ -33,6 +41,17 @@ class MoviesRepository @Inject constructor(
     }
 
     private fun emitFromCache() {
-        topMoviesData.postValue(TopMoviesResponse(lastPage, cache, -1))
+        if (enableFiltering) {
+            val filteredCache = cache.filter {
+                LocalDate.parse(it.releaseDate).minusYears(minYear).year >= 0 &&
+                        LocalDate.parse(it.releaseDate).minusYears(maxYear).year <= 0
+
+            }
+            topMoviesData.postValue(TopMoviesResponse(lastPage, filteredCache, -1))
+
+        } else {
+            topMoviesData.postValue(TopMoviesResponse(lastPage, cache, -1))
+
+        }
     }
 }
