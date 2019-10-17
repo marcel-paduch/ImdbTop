@@ -1,0 +1,69 @@
+apply plugin: 'com.android.application'
+apply plugin: "kotlin-kapt"
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.paduch.myapplication"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+androidExtensions {
+    experimental = true
+}
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.core:core-ktx:1.1.0'
+    def retrofitVersion = '2.5.0'
+    def lifecycleVersion = "1.1.1"
+    def daggerVersion = "2.23.2"
+    def gsonVersion = "2.8.5"
+    implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
+    implementation 'com.google.android.material:material:1.0.0-beta01'
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+
+    androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
+    implementation "android.arch.lifecycle:extensions:$lifecycleVersion"
+    implementation "android.arch.lifecycle:viewmodel:$lifecycleVersion"
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    implementation "com.google.code.gson:gson:$gsonVersion"
+    implementation "com.google.dagger:dagger:$daggerVersion"
+    kapt  "com.google.dagger:dagger-compiler:$daggerVersion"
+    implementation 'com.github.bumptech.glide:glide:4.10.0'
+    kapt 'com.github.bumptech.glide:compiler:4.10.0'
+    //testing
+    def junit = "4.12"
+    def mockito = "1.10.19"
+    def retrofitMock = "2.5.0"
+    def androidTestSuite = "1.1.0"
+    def androidTestRules = "1.1.1"
+    def androidCore = "2.0.1"
+    def espresso = "3.1.1"
+    testImplementation "junit:junit:$junit"
+    testImplementation "org.mockito:mockito-core:$mockito"
+    testImplementation "androidx.arch.core:core-testing:$androidCore"
+    testImplementation "com.squareup.retrofit2:retrofit-mock:$retrofitMock"
+    androidTestImplementation "androidx.test.ext:junit:$androidTestSuite"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso"
+    androidTestImplementation "androidx.test:runner:$androidTestSuite"
+    androidTestImplementation "androidx.test:core:$androidTestSuite"
+    androidTestImplementation "androidx.test:rules:$androidTestRules"
+}
