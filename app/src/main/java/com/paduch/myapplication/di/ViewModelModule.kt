@@ -3,19 +3,12 @@ package com.paduch.myapplication.di
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.paduch.myapplication.data.remote.service.ImdbService
-import com.paduch.myapplication.data.repository.MoviesRepository
 import com.paduch.myapplication.viewmodel.TopMoviesViewModel
+import com.paduch.myapplication.viewmodel.VideosViewModel
 import dagger.Binds
 import dagger.MapKey
 import dagger.Module
-import dagger.Provides
 import dagger.multibindings.IntoMap
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledThreadPoolExecutor
-import javax.inject.Provider
-import javax.inject.Singleton
 import kotlin.reflect.KClass
 
 
@@ -33,6 +26,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(TopMoviesViewModel::class)
     internal abstract fun TopMoviesViewModel(viewModel: TopMoviesViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(VideosViewModel::class)
+    internal abstract fun VideosViewModel(viewModel: VideosViewModel): ViewModel
 
 }
 

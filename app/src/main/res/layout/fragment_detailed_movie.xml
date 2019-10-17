@@ -28,6 +28,7 @@
 
     <Button
         android:id="@+id/video_button"
+        android:enabled="false"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/play_trailer" />

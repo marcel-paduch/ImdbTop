@@ -1,5 +1,6 @@
 package com.paduch.myapplication.di
 
+import com.paduch.myapplication.view.DetailedMovieFragment
 import com.paduch.myapplication.view.TopMoviesFragment
 
 import javax.inject.Singleton
@@ -11,4 +12,5 @@ import dagger.Component
 interface MoviesComponent {
 
     fun inject(topMoviesFragment: TopMoviesFragment)
+    fun injectDetailed(detailedMovieFragment: DetailedMovieFragment)
 }

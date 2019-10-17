@@ -1,15 +1,8 @@
 package com.paduch.myapplication
 
-import android.app.Application
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import android.view.Menu
-import android.view.MenuItem
 import com.paduch.myapplication.view.TopMoviesFragment
-
-import kotlinx.android.synthetic.main.activity_main.*
-import net.danlew.android.joda.JodaTimeAndroid
 
 class MainActivity : AppCompatActivity() {
 

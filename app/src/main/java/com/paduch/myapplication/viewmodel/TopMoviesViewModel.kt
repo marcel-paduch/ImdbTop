@@ -15,7 +15,7 @@ class TopMoviesViewModel @Inject constructor(
     val topMoviesLiveData: LiveData<TopMoviesResponse> =
         Transformations.switchMap(pageFilter, repository::getTopMovies)
 
-    fun requestPage(page: Int) = pageFilter.postValue(page)
+    fun requestPage(page: Int = 1) = pageFilter.postValue(page)
 
     fun setYearFiltering(minYear: Int, maxYear: Int) {
         repository.minYear = minYear

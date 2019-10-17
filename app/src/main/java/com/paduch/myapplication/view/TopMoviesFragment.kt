@@ -47,7 +47,7 @@ class TopMoviesFragment : Fragment() {
         viewModel.topMoviesLiveData.observe(
             viewLifecycleOwner,
             Observer { adapter?.submitList(it.results) })
-        viewModel.requestPage(2)
+        viewModel.requestPage()
         return view
     }
 
