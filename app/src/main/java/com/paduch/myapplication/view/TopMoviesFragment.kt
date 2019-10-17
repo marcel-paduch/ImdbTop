@@ -2,6 +2,7 @@ package com.paduch.myapplication.view
 
 import android.app.AlertDialog
 import android.content.Context
+import android.opengl.Visibility
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.paduch.myapplication.R
 import com.paduch.myapplication.data.remote.model.Movie
 import com.paduch.myapplication.di.DaggerMoviesComponent
@@ -40,6 +42,13 @@ class TopMoviesFragment : Fragment() {
         val recyclerView = view?.my_recycler_view
         val layoutManager = LinearLayoutManager(context)
         val fab = view?.fab
+
+        val progressDrawable = context?.let { CircularProgressDrawable(it) }
+        progressDrawable?.centerRadius = 250f
+        progressDrawable?.strokeWidth = 25f
+        //progressDrawable?.setVisible(true, false)
+        progressDrawable?.start()
+        view?.progress_drawable?.setImageDrawable(progressDrawable)
         fab?.setOnClickListener { showFilterDialog() }
         recyclerView?.layoutManager = layoutManager
         recyclerView?.addItemDecoration(DividerItemDecoration(context, layoutManager.orientation))
@@ -53,6 +62,8 @@ class TopMoviesFragment : Fragment() {
         viewModel.topMoviesLiveData.observe(
             viewLifecycleOwner,
             Observer {
+                progressDrawable?.stop()
+                view?.progress_drawable?.visibility = View.GONE
                 adapter?.submitList(ArrayList(it.results))
                 viewModel.lastRequestedPage = it.page
             })
