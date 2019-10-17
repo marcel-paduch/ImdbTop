@@ -16,7 +16,7 @@ class MoviesRepository @Inject constructor(
 ) {
     private val topMoviesData: MutableLiveData<TopMoviesResponse> = MutableLiveData()
     private val cache: ArrayList<Movie> = ArrayList()
-    private var lastPage = 1
+    private var lastPage = 0
     var enableFiltering = false
         set(x) {
             field = x
@@ -26,8 +26,9 @@ class MoviesRepository @Inject constructor(
     var minYear = 0
 
     fun getTopMovies(page: Int = 1): MutableLiveData<TopMoviesResponse> {
-        // emitFromCache()
-        refreshTopMovies(page)
+        if (page > lastPage) {
+            refreshTopMovies(page)
+        }
         return topMoviesData
     }
 
@@ -35,7 +36,10 @@ class MoviesRepository @Inject constructor(
         executor.execute {
             val response = service.top(page).execute().body()
             lastPage = response?.page ?: 1
-            response?.results?.let { cache.addAll(it) }
+            response?.results?.let {
+                cache.addAll(response.results)
+                lastPage = response.page
+            }
             emitFromCache()
         }
     }
@@ -45,13 +49,11 @@ class MoviesRepository @Inject constructor(
             val filteredCache = cache.filter {
                 LocalDate.parse(it.releaseDate).minusYears(minYear).year >= 0 &&
                         LocalDate.parse(it.releaseDate).minusYears(maxYear).year <= 0
-
             }
             topMoviesData.postValue(TopMoviesResponse(lastPage, filteredCache, -1))
 
         } else {
             topMoviesData.postValue(TopMoviesResponse(lastPage, cache, -1))
-
         }
     }
 }
